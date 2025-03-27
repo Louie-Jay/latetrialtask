@@ -1,22 +1,30 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Session, User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import supabase from "../../supabase";
 import LoadingScreen from "../components/LoadingScreen";
+import { useNavigate } from "react-router-dom";
 
-type AppUser = (User & { role?: "admin" | "user" | "promoter" | "dj" | null }) | null;
+// type AppUser = (User & { role?: "admin" | "user" | "promoter" | "dj" | null }) | null;
 
+type User = {
+  id: string;
+  email: string;
+  role: string;
+  points: number;
+  created_at: string;
+}
 
 interface SessionContextType {
   session: Session | null;
-  user: AppUser;
-  updateUserRole: (newRole: "admin" | "user" | null) => Promise<void>;
-  setAuthUser: (user: AppUser) => void;
+  user: User | null;
+  // updateUserRole: (newRole: "admin" | "user" | null) => Promise<void>;
+  setAuthUser: (user: User) => void;
 }
 
 const SessionContext = createContext<SessionContextType>({
   session: null,
   user: null,
-  updateUserRole: async () => {},
+  // updateUserRole: async () => {},
   setAuthUser: () => {},
 });
 
@@ -31,36 +39,45 @@ export const useSession = () => {
 type Props = { children: React.ReactNode };
 export const SessionProvider = ({ children }: Props) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setAuthUser] = useState<AppUser>(null);
+  const [user, setAuthUser] = useState<User>({
+    id: '1',
+    email: "admin@gmail.com",
+    role: "admin",
+    points: 9855,
+    created_at: 'March 1, 1940',
+});
   const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
-  const updateUserRole = async (newRole: "admin" | "user" | "promoter" | "dj" | null) => {
-    if (!user) return;
+  // const updateUserRole = async (
+  //   // newRole: "admin" | "user" | "promoter" | "dj" | null
+  // ) => {
+  //   if (!user) return;
 
-    try {
-      const { data: updatedUser, error } = await supabase.auth.updateUser({
-        data: { role: newRole }
-      });
+  //   try {
+  //     const { error } = await supabase.auth.updateUser({
+  //       data: { role: "admin" }
+  //     });
 
-      if (error) throw error;
+  //     if (error) throw error;
       
-      setAuthUser(updatedUser?.user ? { 
-        ...updatedUser.user, 
-        role: newRole ?? undefined 
-      } : null);
-    } catch (error) {
-      console.error("Role update failed:", error);
-    }
-  };
+  //     // setAuthUser(updatedUser?.user ? { 
+  //     //   ...updatedUser.user, 
+  //     //   role: newRole ?? undefined 
+  //     // } : null);
+  //   } catch (error) {
+  //     console.error("Role update failed:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const authStateListener = supabase.auth.onAuthStateChange(
       async (_, session) => {
         setSession(session);
-        setAuthUser(session?.user ? { 
-          ...session.user, 
-          role: session.user.user_metadata?.role 
-        } : null);
+        // setAuthUser(session?.user ? { 
+        //   ...session.user, 
+        //   role: session.user.user_metadata?.role 
+        // } : null);
         setIsLoading(false);
       }
     );
@@ -69,10 +86,10 @@ export const SessionProvider = ({ children }: Props) => {
     const checkSession = async () => {
       const { data: { session: initialSession } } = await supabase.auth.getSession();
       setSession(initialSession);
-      setAuthUser(initialSession?.user ? { 
-        ...initialSession.user, 
-        role: initialSession.user.user_metadata?.role 
-      } : null);
+      // setAuthUser(initialSession?.user ? { 
+      //   ...initialSession.user, 
+      //   role: initialSession.user.user_metadata?.role 
+      // } : null);
       setIsLoading(false);
     };
 
@@ -80,11 +97,14 @@ export const SessionProvider = ({ children }: Props) => {
 
     return () => {
       authStateListener.data.subscription.unsubscribe();
+      navigate('/dashboard');
     };
   }, []);
 
   return (
-    <SessionContext.Provider value={{ session, user, updateUserRole, setAuthUser }}>
+    <SessionContext.Provider value={{ session, user, 
+    // updateUserRole,
+     setAuthUser }}>
       {isLoading ? <LoadingScreen onLoadComplete={() => {}} /> : children}
     </SessionContext.Provider>
   );

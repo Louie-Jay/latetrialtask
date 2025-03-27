@@ -1,27 +1,27 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Ticket, User, Home, Music, MapPin, Crown, Palette, Settings } from 'lucide-react';
-import { signOut } from '../lib/supabase';
+// import { signOut } from '../lib/supabase';
 import supabase from "../../supabase";
 import { useSession } from '../context/SessionContext';
 
-type NavbarProps = {
-  user: any;
-};
+// type NavbarProps = {
+//   user: any;
+// };
 
 function Navbar(
   // { user }: NavbarProps
 ) {
   const navigate = useNavigate();
   const { user } = useSession();
-  const { setAuthUser } = useSession();
+  // const { setAuthUser } = useSession();
 
   const handleSignOut = async () => {
     try {
       // await signOut();
       supabase.auth.signOut();
       
-setAuthUser(null); // Global logout
+// setAuthUser(null); // Global logout
       navigate('/account');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -29,6 +29,7 @@ setAuthUser(null); // Global logout
   };
 
   const showPortalButton = user?.role === 'admin';
+  const location = useLocation();
 
   return (
     <>
@@ -57,7 +58,7 @@ setAuthUser(null); // Global logout
 
             {/* Account Links */}
             <div className="flex items-center space-x-8">
-              {user && (
+              {location.pathname === '/dashboard' && (
                 <>
                   <Link
                     to="/dashboard"
@@ -77,7 +78,7 @@ setAuthUser(null); // Global logout
                   )}
                 </>
               )}
-              {user ? (
+              {location.pathname === '/dashboard' ? (
                 <button
                   onClick={handleSignOut}
                   className="flex items-center space-x-2 text-gray-300 hover:text-purple-400 transition-colors"
@@ -108,7 +109,7 @@ setAuthUser(null); // Global logout
             <MobileNavIcon to="/members" icon={<Music />} />
             <MobileNavIcon to="/creatives" icon={<Palette />} />
             <MobileNavIcon to="/venues" icon={<MapPin />} />
-            {user ? (
+            {location.pathname === '/dashboard' ? (
               <>
                 <MobileNavIcon to="/dashboard" icon={<Crown />} />
                 {showPortalButton && <MobileNavIcon to="/portal/dashboard" icon={<Settings />} />}

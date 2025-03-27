@@ -10,7 +10,7 @@ import {
   Ticket,
 } from "lucide-react";
 // import { supabase, signIn, signUp } from '../lib/supabase';
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import supabase from "../../supabase";
 import { useSession } from "../context/SessionContext";
 
@@ -27,8 +27,8 @@ export default function Account() {
     role: "user",
   });
 
-  const { session, user } = useSession();
-  const { updateUserRole } = useSession();
+  const { session } = useSession();
+  // const { updateUserRole } = useSession();
   if (session) return <Navigate to="/dashboard" />;
 
   // const supabase = createClient('https://tqpjskgcqrbxrcuivkmx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxcGpza2djcXJieHJjdWl2a214Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwMDU4MTgsImV4cCI6MjA1ODU4MTgxOH0.JSSiu1Zz3hy7-6-VtoF4EelZ80iNmIq4RUjWggwJKLQ')
@@ -92,69 +92,72 @@ export default function Account() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
     e.preventDefault();
-        const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
-        if (error) {
-          setError(
-            error instanceof Error ? error.message : "Authentication failed"
-          );
-        } else {
-          // updateUserRole("admin");
+      //   const { error } = await supabase.auth.signInWithPassword({
+      //     email: formData.email,
+      //     password: formData.password,
+      //   });
+      //   if (error) {
+      //     setError(
+      //       error instanceof Error ? error.message : "Authentication failed"
+      //     );
+      //   } else {
+      //     // updateUserRole("admin");
           
-          // navigate("/");
-          navigate("/dashboard");
-        }
+      //     // navigate("/");
+      //     navigate("/dashboard");
+      //   }
       
-      setLoading(false);
+      // setLoading(false);
     
 
-    // try {
-    //   if (!showLogin) {
-    //     // Sign up
-    //     const userData = {
-    //       full_name: formData.fullName,
-    //       role: formData.role,
-    //     };
-
-    //     await supabase.auth.signUp({
-    //       email: formData.email,
-    //       password: formData.password,
-    //     });
-
-    //     // Show success message and switch to login
-    //     setShowLogin(true);
-    //     setFormData({
-    //       email: formData.email,
-    //       password: "",
-    //       confirmPassword: "",
-    //       fullName: "",
-    //       role: "user",
-    //     });
-    //     setError("Account created! Please sign in.");
-    //   } else {
-    //     // setStatus("Logging in...");
-    //     const { error } = await supabase.auth.signInWithPassword({
-    //       email: formData.email,
-    //       password: formData.password,
-    //     });
-    //     if (error) {
-    //       setError(
-    //         error instanceof Error ? error.message : "Authentication failed"
-    //       );
-    //     } else {
-    //       updateUserRole("admin");
-    //       navigate("/dashboard");
-    //     }
-    //   }
-    //   setLoading(false);
-    // } catch (err) {
-    //   console.error("Auth error:", err);
-    //   setError(err instanceof Error ? err.message : "Authentication failed");
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      if (validateForm()) {
+        if (!showLogin) {
+          // Sign up
+          // const userData = {
+          //   full_name: formData.fullName,
+          //   role: formData.role,
+          // };
+  
+          await supabase.auth.signUp({
+            email: formData.email,
+            password: formData.password,
+          });
+  
+          // Show success message and switch to login
+          setShowLogin(true);
+          setFormData({
+            email: formData.email,
+            password: "",
+            confirmPassword: "",
+            fullName: "",
+            role: "user",
+          });
+          setError("Account created! Please sign in.");
+        } else {
+          // setStatus("Logging in...");
+          const { error } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password,
+          });
+          if (error) {
+            setError(
+              error instanceof Error ? error.message : "Authentication failed"
+            );
+          } else {
+            // updateUserRole("admin");
+            navigate("/dashboard");
+          }
+        }
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error("Auth error:", err);
+      setError(err instanceof Error ? err.message : "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
     
   };
 

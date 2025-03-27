@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, MapPin, Calendar, Users, Star, Clock, ChevronRight, Loader, Ticket as TicketIcon } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { Music, MapPin, Users, Star, Clock, ChevronRight, Loader, Ticket as TicketIcon } from 'lucide-react';
+// import { supabase } from '../lib/supabase';
 import type { RewardTier, RewardBenefit, Ticket, User, Event } from '../types/database';
 import TicketCard from '../components/TicketCard';
 import RewardsProgress from '../components/RewardsProgress';
@@ -17,74 +17,124 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   // fetchDashboardData();
-  // }, []);
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
       // Get current user
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) throw new Error('Not authenticated');
+      // const { data: { user: authUser } } = await supabase.auth.getUser();
+      // if (!authUser) throw new Error('Not authenticated');
 
       // Get user profile
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
+      // const { data: profile, error: profileError } = await supabase
+      //   .from('users')
+      //   .select('*')
+      //   .eq('id', authUser.id)
+      //   .single();
 
-      if (profileError) throw profileError;
-      setUser(profile);
+      // if (profileError) throw profileError;
+      setUser({
+        id: '1',
+        email: "admin@gmail.com",
+        role: "admin",
+        points: 9855,
+        created_at: 'March 1, 1940',
+    });
 
       // Get reward tiers
-      const { data: tiersData, error: tiersError } = await supabase
-        .from('reward_tiers')
-        .select('*')
-        .order('points_threshold', { ascending: true });
+      // const { data: tiersData, error: tiersError } = await supabase
+      //   .from('reward_tiers')
+      //   .select('*')
+      //   .order('points_threshold', { ascending: true });
 
-      if (tiersError) throw tiersError;
-      setTiers(tiersData);
+      // if (tiersError) throw tiersError;
+      setTiers([{
+        id: '1',
+        name: 'DJ',
+        points_threshold: 45,
+        description: "Very good",
+        icon: 'N/A',
+    }]);
 
       // Get reward benefits
-      const { data: benefitsData, error: benefitsError } = await supabase
-        .from('reward_benefits')
-        .select('*');
+      // const { data: benefitsData, error: benefitsError } = await supabase
+      //   .from('reward_benefits')
+      //   .select('*');
 
-      if (benefitsError) throw benefitsError;
-      setBenefits(benefitsData);
+      // if (benefitsError) throw benefitsError;
+      setBenefits([{
+        id: '1',
+        tier_id: '1',
+        name: 'DJ',
+        description: "Very Good",
+        benefit_type: "Good music",
+        value: '1234',
+    }]);
 
       // Get user's tickets
-      const { data: ticketsData, error: ticketsError } = await supabase
-        .from('tickets')
-        .select(`
-          *,
-          event:events (
-            name,
-            event_date,
-            venue
-          )
-        `)
-        .eq('user_id', authUser.id)
-        .order('created_at', { ascending: false });
+      // const { data: ticketsData, error: ticketsError } = await supabase
+      //   .from('tickets')
+      //   .select(`
+      //     *,
+      //     event:events (
+      //       name,
+      //       event_date,
+      //       venue
+      //     )
+      //   `)
+      //   .eq('user_id', authUser.id)
+      //   .order('created_at', { ascending: false });
 
-      if (ticketsError) throw ticketsError;
-      setTickets(ticketsData);
+      // if (ticketsError) throw ticketsError;
+      setTickets([{
+        id: "1",
+        event_id: "1",
+        user_id: "1",
+        qr_code: "1",
+        purchase_date: "March 1, 1940",
+        price_paid: 4000,
+        is_group_ticket: true,
+        status: 'Agnas',
+        shared_by: "John Doe",
+        shared_at: "somewhere",
+        points_earned: 4089,
+        created_at: "March 1, 1940",
+        event: {
+            name: "Concert",
+            event_date: "March 1, 1940",
+            venue: "Colisium",
+        },
+    }]);
 
       // Get next upcoming event
-      const { data: nextEventData, error: nextEventError } = await supabase
-        .from('events')
-        .select('*')
-        .gt('event_date', new Date().toISOString())
-        .order('event_date', { ascending: true })
-        .limit(1)
-        .single();
+      // const { data: nextEventData, error: nextEventError } = await supabase
+      //   .from('events')
+      //   .select('*')
+      //   .gt('event_date', new Date().toISOString())
+      //   .order('event_date', { ascending: true })
+      //   .limit(1)
+      //   .single();
 
-      if (nextEventError && nextEventError.code !== 'PGRST116') {
-        // PGRST116 means no rows returned, which is fine
-        throw nextEventError;
-      }
-      setNextEvent(nextEventData);
+      // if (nextEventError && nextEventError.code !== 'PGRST116') {
+      //   // PGRST116 means no rows returned, which is fine
+      //   throw nextEventError;
+      // }
+      setNextEvent({
+        id: "1",
+        name: "Concert",
+        description: "Good vibes only",
+        venue: "BlackGate",
+        event_date: "March 1, 1945",
+        individual_price: 45,
+        group_price: 55,
+        discount_code: "f3f3f3",
+        image_url: "n/a",
+        tickets_sold: 533,
+        capacity: 233,
+        created_at: "March 1, 1945",
+    });
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
@@ -104,45 +154,51 @@ function Dashboard() {
 
   const handleTicketShare = async () => {
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) throw new Error('Not authenticated');
+      // const { data: { user: authUser } } = await supabase.auth.getUser();
+      // if (!authUser) throw new Error('Not authenticated');
 
-      // Update user points
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ points: (user?.points || 0) + 50 })
-        .eq('id', authUser.id);
+      // // Update user points
+      // const { error: updateError } = await supabase
+      //   .from('users')
+      //   .update({ points: (user?.points || 0) + 50 })
+      //   .eq('id', authUser.id);
 
-      if (updateError) throw updateError;
+      // if (updateError) throw updateError;
 
-      // Refresh user data
-      const { data: updatedUser, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
+      // // Refresh user data
+      // const { data: updatedUser, error: userError } = await supabase
+      //   .from('users')
+      //   .select('*')
+      //   .eq('id', authUser.id)
+      //   .single();
 
-      if (userError) throw userError;
-      setUser(updatedUser);
+      // if (userError) throw userError;
+      setUser({
+        id: "1",
+        email: "t1@gmail.com",
+        role: "admin",
+        points: 1324,
+        created_at: "March 1, 1940"
+    });
     } catch (err) {
       console.error('Error updating points:', err);
     }
   };
 
-  const getTierGradient = (tierName: string) => {
-    switch (tierName?.toLowerCase()) {
-      case 'bronze':
-        return 'bg-gradient-radial from-amber-900/20 via-black to-black';
-      case 'silver':
-        return 'bg-gradient-radial from-gray-800/20 via-black to-black';
-      case 'gold':
-        return 'bg-gradient-radial from-yellow-900/20 via-black to-black';
-      case 'platinum':
-        return 'bg-gradient-radial from-sky-900/20 via-black to-black';
-      default:
-        return 'bg-gradient-radial from-purple-900/20 via-black to-black';
-    }
-  };
+  // const getTierGradient = (tierName: string) => {
+  //   switch (tierName?.toLowerCase()) {
+  //     case 'bronze':
+  //       return 'bg-gradient-radial from-amber-900/20 via-black to-black';
+  //     case 'silver':
+  //       return 'bg-gradient-radial from-gray-800/20 via-black to-black';
+  //     case 'gold':
+  //       return 'bg-gradient-radial from-yellow-900/20 via-black to-black';
+  //     case 'platinum':
+  //       return 'bg-gradient-radial from-sky-900/20 via-black to-black';
+  //     default:
+  //       return 'bg-gradient-radial from-purple-900/20 via-black to-black';
+  //   }
+  // };
 
   const formatDate = (date: string) => {
     const eventDate = new Date(date);

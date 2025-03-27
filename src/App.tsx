@@ -4,7 +4,7 @@ import GlobalErrorBoundary from './components/GlobalErrorBoundary';
 import Navbar from './components/Navbar';
 import LoadingScreen from './components/LoadingScreen';
 import RouteTransition from './components/RouteTransition';
-import { useAuth } from './hooks/useAuth';
+// import { useAuth } from './hooks/useAuth';
 
 // Pages
 import Home from './pages/Home';
@@ -34,12 +34,12 @@ import PortalDashboard from './pages/portal/PortalDashboard';
 import PortalLogin from './pages/portal/PortalLogin';
 import PortalEventForm from './pages/portal/EventForm';
 import ScannerPage from './pages/portal/ScannerPage';
-import { useSession } from './context/SessionContext';
+// import { useSession } from './context/SessionContext';
 
 function App() {
   // const { user, loading, error } = useAuth();
 
-  const { user } = useSession();
+  // const { user } = useSession();
   const loading = false;
   const error = false;
 
@@ -93,30 +93,30 @@ function App() {
               {/* Protected Routes */}
               <Route 
                 path="/dashboard" 
-                element={user ? <Dashboard /> : <Navigate to="/account" replace />} 
+                element={<Dashboard />} 
               />
               <Route 
                 path="/account/edit" 
-                element={user ? <EditProfile /> : <Navigate to="/account" replace />} 
+                element={<EditProfile />} 
               />
               <Route 
                 path="/tickets/purchase/:id" 
-                element={user ? <TicketPurchase /> : <Navigate to="/account" replace />} 
+                element={<TicketPurchase />} 
               />
               <Route 
                 path="/checkout" 
-                element={user ? <Checkout /> : <Navigate to="/account" replace />} 
+                element={<Checkout />} 
               />
               <Route 
                 path="/confirmation" 
-                element={user ? <TicketConfirmation /> : <Navigate to="/account" replace />} 
+                element={<TicketConfirmation />} 
               />
 
               {/* Admin Routes */}
               <Route 
                 path="/admin" 
                 element={
-                  user?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/account" replace />
+                  <AdminDashboard />
                 } 
               />
 
@@ -125,25 +125,19 @@ function App() {
               <Route 
                 path="/portal/dashboard" 
                 element={
-                  user?.role === 'dj' || user?.role === 'promoter' || user?.role === 'admin' 
-                    ? <PortalDashboard /> 
-                    : <Navigate to="/portal/login" replace />
+                  <PortalDashboard /> 
                 } 
               />
               <Route 
                 path="/portal/events/new" 
                 element={
-                  user?.role === 'dj' || user?.role === 'promoter' || user?.role === 'admin'
-                    ? <PortalEventForm />
-                    : <Navigate to="/portal/login" replace />
+                  <PortalEventForm />
                 }
               />
               <Route 
                 path="/portal/scanner" 
                 element={
-                  user?.role === 'dj' || user?.role === 'promoter' || user?.role === 'admin'
-                    ? <ScannerPage />
-                    : <Navigate to="/portal/login" replace />
+                  <ScannerPage />
                 }
               />
 
